@@ -5,6 +5,11 @@ on:
     branches:
       - main
 
+# Required for OIDC token generation
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -12,25 +17,37 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::946839354953:role/portfolio-github-deploy
+          aws-region: ca-west-1
+
+      - name: Read config from SSM
+        id: config
+        run: |
+          S3_BUCKET=$(aws ssm get-parameter \
+            --name "/portfolio/s3_bucket" \
+            --query "Parameter.Value" \
+            --output text)
+          DISTRIBUTION_ID=$(aws ssm get-parameter \
+            --name "/portfolio/cloudfront_distribution_id" \
+            --query "Parameter.Value" \
+            --output text)
+          echo "s3_bucket=$S3_BUCKET" >> $GITHUB_OUTPUT
+          echo "distribution_id=$DISTRIBUTION_ID" >> $GITHUB_OUTPUT
+
       - name: Deploy to S3
         run: |
-          aws s3 sync . s3://${{ secrets.S3_BUCKET }} \
+          aws s3 sync . s3://${{ steps.config.outputs.s3_bucket }} \
             --delete \
             --exclude ".git/*" \
             --exclude ".github/*" \
             --exclude "*.md" \
             --cache-control "max-age=86400"
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
 
       - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation \
-            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --distribution-id ${{ steps.config.outputs.distribution_id }} \
             --paths "/*"
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
