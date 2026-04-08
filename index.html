@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sindhuja KS — Engineering Leader & Startup Founder</title>
+  <title>Sindhuja Kali Srinivasan — Engineering Leader & Startup Founder</title>
   <meta name="description" content="Engineering Manager and Tech Lead with 14 years of experience. Co-founder of MaidLink. Building real software for a real business." />
-  <meta property="og:title" content="Sindhuja KS — Engineering Leader & Startup Founder" />
+  <meta property="og:title" content="Sindhuja Kali Srinivasan — Engineering Leader & Startup Founder" />
   <meta property="og:description" content="14 years of engineering leadership. Currently building MaidLink — a two-sided marketplace for professional cleaning services in Calgary." />
   <meta property="og:type" content="website" />
   <link rel="stylesheet" href="style.css" />
@@ -14,7 +14,7 @@
 
   <!-- NAV -->
   <nav>
-    <span class="nav-name">Sindhuja KS</span>
+    <span class="nav-name">Sindhuja Kali Srinivasan</span>
     <div class="nav-links">
       <a href="#about">About</a>
       <a href="#building">Building</a>
@@ -90,22 +90,24 @@
         </div>
         <div class="prose">
           <p>
-            The business already exists — maids, clients, and jobs running manually.
-            I'm building the platform to automate and scale it.
+            The business exists and the app is live — real maids, real clients, real jobs.
+            People are actively using it.
           </p>
           <p>
             The flagship feature is an <strong>AI Estimator</strong>: a client uploads photos
-            of their space, and the tool estimates cleaning time and generates a full checklist.
-            Solves the #1 anxiety — "how much is this going to cost me?" — before a human ever
-            picks up the phone.
+            of their space directly to S3 (Lambda never touches the bytes), and Amazon Nova Lite
+            on Bedrock returns room-by-room time estimates, 1-cleaner and 2-cleaner hours, a full
+            cleaning checklist, and coverage warnings if photos are incomplete.
           </p>
           <p>
-            Built on <strong>AWS Lambda + Amazon Nova Lite</strong>. Currently building a
-            scheduling agent using Amazon Nova — agentic AI, not just generative.
+            Cost per analysis: <strong>$0.0012</strong>. At 1,000 analyses/month: $1.20.
+            Built on <strong>AWS Bedrock + Amazon Nova Lite</strong> on Lambda.
+            Currently building a scheduling agent — agentic AI, not just generative.
           </p>
         </div>
         <div class="card-links">
           <a href="https://maidlink.app" target="_blank" rel="noopener" class="link-arrow">maidlink.app →</a>
+          <a href="https://maidlink.ca" target="_blank" rel="noopener" class="link-arrow">maidlink.ca (app) →</a>
           <a href="https://www.linkedin.com/company/maidlinkcanada/" target="_blank" rel="noopener" class="link-muted">LinkedIn</a>
         </div>
       </div>
@@ -134,8 +136,8 @@
           hard vs. what just sounds hard.
         </p>
         <p>
-          Right now I'm building a production AWS serverless application, solo, while co-running
-          a startup. That's the proof.
+          Right now I'm building a production AWS serverless application on Bedrock — solo, while
+          co-running a startup. Shipping real agentic AI, not just talking about it. That's the proof.
         </p>
       </div>
 
@@ -153,8 +155,9 @@
           <h4>Technical</h4>
           <ul>
             <li>AWS Serverless (Lambda, API GW, S3)</li>
+            <li>AWS Bedrock · Amazon Nova</li>
+            <li>Agentic AI · GenAI in production</li>
             <li>React · Frontend architecture</li>
-            <li>Amazon Nova / Bedrock (AI)</li>
             <li>CI/CD · DevOps practices</li>
           </ul>
         </div>
@@ -220,7 +223,7 @@
 
   <!-- FOOTER -->
   <footer>
-    <p>Sindhuja KS · Built on AWS · <a href="https://maidlink.app" target="_blank" rel="noopener">MaidLink</a></p>
+    <p>Sindhuja Kali Srinivasan · Built on AWS · <a href="https://maidlink.app" target="_blank" rel="noopener">MaidLink</a></p>
   </footer>
 
 </body>
