@@ -19,7 +19,7 @@ Push to `main` triggers `.github/workflows/deploy.yml`:
 ## Key content facts (keep in sync with index.html)
 - 14 years software engineering experience
 - Co-founder of MaidLink — two-sided cleaning marketplace, Calgary CA
-- Open to: Engineering Manager / Tech Lead roles, remote, US or Canada
+- Open to: Staff AI Engineer, Applied AI Engineer, Forward Deployed Engineer, Engineering Manager (AI) — remote, Canada or US
 - MaidLink tech: AWS Lambda + Amazon Nova Lite, scheduling agent in progress
 - LinkedIn: https://www.linkedin.com/in/sindhujaks/
 - GitHub: https://github.com/sindhujaIBM
