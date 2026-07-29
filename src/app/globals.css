@@ -150,6 +150,8 @@ nav {
   font-size: 15px;
   text-decoration: none;
   transition: background 0.15s;
+  border: none;
+  cursor: pointer;
 }
 
 .btn-primary:hover {
@@ -525,6 +527,9 @@ nav {
 
 .connect-links {
   margin-bottom: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .connect-note {
@@ -553,6 +558,181 @@ footer p {
 
 footer a {
   color: #9CA3AF;
+}
+
+/* ===========================
+   ASK (AI ASSISTANT)
+=========================== */
+.ask-launcher {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 200;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.8rem 1.4rem;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  transition: background 0.15s, transform 0.15s;
+}
+
+.ask-launcher:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.ask-panel {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 200;
+  width: min(380px, calc(100vw - 2rem));
+  max-height: min(560px, calc(100vh - 3rem));
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ask-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-alt);
+}
+
+.ask-header h3 {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ask-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0.15rem 0.35rem;
+}
+
+.ask-close:hover {
+  color: var(--text);
+}
+
+.ask-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ask-empty {
+  color: var(--text-muted);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.ask-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.ask-suggestion {
+  text-align: left;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.ask-suggestion:hover {
+  border-color: var(--accent);
+}
+
+.ask-message {
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  max-width: 88%;
+  white-space: pre-wrap;
+}
+
+.ask-message-user {
+  align-self: flex-end;
+  background: var(--accent);
+  color: #fff;
+  border-bottom-right-radius: 3px;
+}
+
+.ask-message-assistant {
+  align-self: flex-start;
+  background: var(--bg-alt);
+  color: var(--text);
+  border-bottom-left-radius: 3px;
+}
+
+.ask-message-error {
+  align-self: flex-start;
+  background: #FEF2F2;
+  color: #991B1B;
+  border-bottom-left-radius: 3px;
+}
+
+.ask-form {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.85rem 1.1rem;
+  border-top: 1px solid var(--border);
+}
+
+.ask-input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  font-size: 14px;
+  font-family: inherit;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.ask-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.ask-send {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0 1rem;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.ask-send:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 /* ===========================
@@ -595,5 +775,11 @@ footer a {
 
   .card {
     padding: 1.25rem;
+  }
+
+  .ask-panel,
+  .ask-launcher {
+    right: 1rem;
+    bottom: 1rem;
   }
 }

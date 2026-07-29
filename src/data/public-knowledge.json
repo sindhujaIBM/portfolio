@@ -1,0 +1,272 @@
+[
+  {
+    "title": "Aurora to RDS — A Cost-Driven Database Migration",
+    "company": "MaidLink",
+    "period": "2026",
+    "type": "technical",
+    "tags": [
+      "AWS",
+      "Architecture",
+      "Cost Optimization",
+      "Execution"
+    ],
+    "body": "## Situation\nMaidLink's AWS bill was $52/month, almost entirely the database. The product is in private beta — bootstrapped, low traffic, predictable load — nowhere near the scale that justifies a premium auto-scaling database. It launched on Aurora Serverless v2, the sensible choice when load is genuinely unknown: fully managed, auto-scaling, no capacity planning. A few months in, Aurora's 0.5 ACU minimum meant always-on compute — a $43/month floor with zero queries running. Not viable for a bootstrapped product at this stage.\n\n## Action\nSindhuja evaluated every realistic alternative. DynamoDB was genuinely cheap at low traffic, but MaidLink is deep into PostgreSQL-specific features — TSRANGE columns for availability windows, the btree_gist extension, complex joins across bookings, maids, and scheduling logic. Rewriting for DynamoDB's access patterns would have taken months — ruled out. Neon and PlanetScale offered serverless Postgres with generous free tiers, but both sit outside AWS, meaning data would leave the VPC — not negotiable for a product handling customer home addresses and booking data — ruled out. RDS PostgreSQL on a t3.micro instance stayed in the same private VPC, same Postgres 15, at roughly $14/month: a fixed instance, no code changes, just a different host endpoint.\n\nMigration ran alongside the live Aurora cluster: all 17 schema migrations replayed, every table copied with row-count verification, then one line swapped in the deploy config to point at the new endpoint.\n\n## Outcome\nZero downtime, a three-minute cutover. $52 to $14 a month — a 70% reduction, with no feature loss and no user impact.\n\n## Learning\nServerless databases earn their premium when load is genuinely unpredictable and spiky. At early stage, with real but predictable traffic patterns, boring and fixed is the right call — build the right thing for right now, not the thing that would matter at a scale that hasn't arrived yet.\n\n## Why This Matters (retrieval angle)\nEvidence of: real architecture decision-making under a cost constraint, systematically ruling out alternatives with concrete reasons rather than picking the trendiest option, and executing a zero-downtime migration solo. Use for: AWS/database technical-depth questions, \"tell me about a cost trade-off you made,\" \"describe an infrastructure decision and why.\"",
+    "source_path": "experiences/maidlink/aurora-to-rds-migration.md"
+  },
+  {
+    "title": "AWS NAT Gateway Cost Discovery",
+    "company": "MaidLink",
+    "period": "2026-03",
+    "type": "technical",
+    "tags": [
+      "AWS",
+      "Architecture",
+      "Serverless",
+      "Cost Optimization",
+      "Security",
+      "Ownership",
+      "Builder"
+    ],
+    "body": "## Situation\nMaidLink's AWS bill showed EC2 charges. That made no sense — MaidLink's backend is fully serverless; there are no EC2 instances anywhere in the architecture.\n\n## Action\nSindhuja dug into the AWS billing dashboard line by line. The charge wasn't EC2 compute — it was a NAT Gateway, billed at roughly $44 CAD/month, charged simply for existing, not for traffic volume. She traced the reason: Lambda functions inside a private VPC need a NAT Gateway to reach the public internet — for SES (email), Bedrock (AI inference), and any other external call. Without it, those Lambdas are cut off from everything outside the VPC — a structural cost of the private-VPC-Lambda pattern, not a misconfiguration.\n\nShe evaluated the one real way to eliminate it: expose Aurora directly to the internet, locked down with strict security groups instead of keeping it VPC-private. Technically workable — and rejected. An internet-facing production database wasn't a risk worth taking to save $44/month. While researching cost options instead, she found AWS Activate — startup credits and support — as a way to offset the broader AWS bill (personal spend was running ~$150 CAD/month at the time).\n\n## Outcome\nKept the private-VPC-Lambda architecture intact — no security trade-off made for a cost saving. Used the NAT Gateway discovery as the trigger to pursue AWS Activate credits instead of weakening the architecture.\n\n## Learning\nServerless doesn't mean free, and \"no EC2\" doesn't mean \"no fixed cost\" — network architecture carries its own always-on cost independent of traffic. The real discipline wasn't the discovery, it was resisting the easy fix: exposing Aurora to the internet would have made the bill smaller and the system worse.\n\n## Why This Matters (retrieval angle)\nEvidence of: reading AWS bills line-by-line instead of accepting them, understanding why a cost exists architecturally, and holding a security line under cost pressure as a sole engineer with no one else to check the decision. Use for: AWS/serverless technical-depth questions, \"tell me about a cost trade-off,\" \"describe a time you were tempted to cut a corner and didn't.\"",
+    "source_path": "experiences/maidlink/nat-gateway-cost-discovery.md"
+  },
+  {
+    "title": "Evaluating 4 LLM Providers for HQ",
+    "company": "MaidLink",
+    "period": "2026-04",
+    "type": "technical",
+    "tags": [
+      "AI",
+      "Claude",
+      "Architecture",
+      "Builder"
+    ],
+    "body": "## Situation\nBuilding MaidLink's AI estimator meant coordinating multiple AI tasks — photo analysis, time estimation, checklist generation — each needing a model with a different cost, privacy policy, and integration path. Sindhuja built HQ, an internal AI-powered team where every task is owned by an agent, and needed to pick a model for it.\n\n## Action\nShe evaluated four providers in order. Claude Agent SDK: the architecture fit best and it's the tool she knows most, but she's on a fixed monthly plan with no API access — Claude Code runs on the plan, the SDK doesn't. Gemini: free tier, solid performance, easy to integrate — but the free tier lets Google train on submitted data, unacceptable for a system where agents handle real tasks and decisions. Ollama: fully private, no cost, runs locally — but local means no path to share, scale, or deploy elsewhere, a ceiling that would be hit quickly. Groq: free API access, no data training on the free tier, and it cleared enough of the real constraints (cost, privacy, deployability) to be the one she chose — running `llama-3.3-70b-versatile`.\n\n## Outcome\nHQ runs on Groq. No provider was perfect — Groq cleared the most blockers for this stage.\n\n## Learning\nThe lesson isn't \"use Groq\" — it's that there's no LLM provider without a catch: cost, privacy, infrastructure, or accessibility. The job is picking the trade-offs you can actually live with for where you are right now.\n\n## Why This Matters (retrieval angle)\nEvidence of: structured, criteria-based technology evaluation (cost, privacy, deployability) rather than defaulting to the most familiar or most hyped option, and comfort revisiting a decision if the provider landscape changes. Use for: AI/LLM architecture questions, \"tell me about a build-vs-buy or vendor decision,\" \"how do you evaluate new AI tools.\"\n\n## Note on the record\nThe published post (`content/approved/sindhuja-post-004-hq-ai-agents.md`) spells the provider \"Grok\" — that's a typo in the public post. The actual provider is **Groq** (groq.com). Don't propagate the \"Grok\" spelling into new content; if the discrepancy ever needs reconciling publicly, that's a correction to make deliberately, not silently.",
+    "source_path": "experiences/maidlink/hq-llm-provider-evaluation.md"
+  },
+  {
+    "title": "Hotjar Discovery Nobody Asked Her to Run",
+    "company": "Cybera",
+    "period": "~2022",
+    "type": "product",
+    "tags": [
+      "Customer Discovery",
+      "Product",
+      "Ownership",
+      "Innovation"
+    ],
+    "body": "## Situation\nSindhuja noticed that at GoA stakeholder demo sessions, the GoA liaison always ran the demos — users were never left to navigate the SkillUp platform on their own. Nobody asked her to investigate, but she suspected the liaison was covering a UX gap rather than just being helpful.\n\n## Action\nShe implemented Hotjar — no sprint ticket, no approval meeting — and watched how real users actually navigated the platform without guidance.\n\n## Outcome\nThe data was clear: users consistently tried to filter by industry first. A single bar chart answered the most common need. The product direction shifted, the team hired a UX designer, and the next version landed significantly better with stakeholders.\n\n## Learning\nThe point wasn't that her hypothesis was right — it was that she built the evidence before anyone had to ask for it.\n\n## Why This Matters (retrieval angle)\nEvidence of: customer discovery instinct, taking initiative without a mandate, and letting real usage data (not opinion) drive a product decision. Use for: \"give an example of initiative,\" \"tell me about a UX/product discovery you ran,\" questions probing product sense in a technical leader.",
+    "source_path": "experiences/cybera/hotjar-ux-discovery.md"
+  },
+  {
+    "title": "LinkedIn MCP Server",
+    "company": "—",
+    "period": "2026",
+    "type": "technical",
+    "tags": [
+      "Builder",
+      "Ownership"
+    ],
+    "body": "## Situation\nNeeded a way to automate LinkedIn posting for personal social content (herself and Muni) as part of the content/growth workflow for MaidLink and their personal brands.\n\n## Action\nBuilt and compiled a working MCP (Model Context Protocol) server for LinkedIn (`tools/linkedin-mcp/`). Added two LinkedIn Developer App products deliberately scoped to what's actually needed now: \"Share on LinkedIn\" (personal posting via `w_member_social`) and \"Sign In with LinkedIn\" (person URN lookup). Explicitly deferred the Marketing Developer Platform product (needed for the MaidLink company page and analytics) because it's a gated, apply-and-wait product — not worth blocking on before personal posting is even working.\n\n## Outcome\nPersonal-account posting and cross-commenting work today. Company-page posting and analytics remain deferred until the gated access comes through.\n\n## Learning\nSequencing matters when a dependency is gated and slow (apply-and-wait) versus self-serve — start with what's usable now, apply for the gated piece in parallel rather than blocking on it.\n\n## Why This Matters (retrieval angle)\nEvidence of: a real, working MCP server built and deployed — a genuine technical credential for MCP-aware AI engineering roles. Frame as \"built and deployed an MCP server for LinkedIn workflow automation\" when relevant. Use for: \"tell me about an MCP/tool-calling project,\" \"describe a time you sequenced work around an external dependency.\"",
+    "source_path": "experiences/side_projects/linkedin-mcp-server.md"
+  },
+  {
+    "title": "OMS Re-platform Under Ambiguity and a Hostile Handover",
+    "company": "Avenue One",
+    "period": "2024",
+    "type": "leadership",
+    "tags": [
+      "Ambiguity",
+      "Delivery",
+      "Execution",
+      "Ownership",
+      "Leadership"
+    ],
+    "body": "## Situation\nSindhuja was brought into Avenue One to lead the re-platforming of a legacy Order Management System off Unqork onto serverless AWS, with a 60-day deadline. She walked in with no laptop set up and no onboarding. Two specific gaps made it worse: she didn't know serverless or Lambda — her background was frontend and full-stack, not cloud architecture — and the senior engineer who had been the de facto lead before she arrived refused to tell her where the repo was or help her get set up. He had been running the team before the company brought her in to lead instead, and it showed immediately.\n\n## Action\nShe didn't escalate the interpersonal friction — she worked around it. She went directly to business stakeholders, dug through the Unqork configuration herself, asked targeted questions of anyone willing to answer, and adjusted the architecture as she found gaps. She kept delivery visible and iterative so stakeholders always knew where things stood.\n\nThe reframe that made this workable: she didn't need to be the expert who wrote the code — she needed to be the person who made decisions and unblocked people. She treated it as a coordination problem, not a knowledge problem — the same way she'd approach any unfamiliar system. She coordinated constantly across infra, product, and QA, surfaced the real blockers, made scope and trade-off calls, and pushed decisions down to the team rather than being the bottleneck: what are the hard limits, what can we compromise on, what's non-negotiable.\n\n## Outcome\nThe team delivered in 70 days against the original 60-day target. The system went live and the business migrated off Unqork. The 10-day slip was made explicit rather than hidden — what got cut, why it was the right trade-off, what would come back next quarter. She and the senior engineer ended up with a functional working relationship by the end of this phase (though the underlying dynamic resurfaced later — see related story).\n\n## Learning\nYou can lead through real ambiguity by owning the decision-making and the coordination, even without domain expertise. Expertise is one path to credibility; clear decision-making under uncertainty is another. The team trusted her not because she knew Lambda, but because she knew how to unblock them, make trade-offs transparent, and push decisions to whoever had the context to make them.\n\n## Why This Matters (retrieval angle)\nEvidence of: leading through ambiguity without technical seniority in the domain, working around interpersonal obstruction without escalating unnecessarily, and shipping under a hard deadline while being transparent about the miss. Use for: \"tell me about a time you led without being the expert,\" \"describe a delivery challenge,\" \"how do you handle a difficult team dynamic,\" ambiguity/EM-round questions generally — swap in the specific company context per interview.",
+    "source_path": "experiences/avenue_one/oms-replatform-ambiguity.md"
+  },
+  {
+    "title": "Prioritizing With No PM and No Specs",
+    "company": "MaidLink",
+    "period": "2026",
+    "type": "product",
+    "tags": [
+      "Product",
+      "Roadmap",
+      "Ambiguity",
+      "Ownership",
+      "Startup"
+    ],
+    "body": "## Situation\nAt MaidLink, Sindhuja has no product manager and no pre-defined specs. Everything that gets built, she decided was the right next thing.\n\n## Action\nHer system starts with what's blocking the business. The AI Estimator came first because it addressed the customer anxiety that couldn't be resolved manually — \"how much is this going to cost me?\" That had to be answered before the business could scale. Scheduling came next because it's the bottleneck holding back booking volume.\n\nWithin a sprint, the rule is simple: what's the highest-value item that's also ready? \"Ready\" means dependencies are resolved and the problem is defined well enough to build — she doesn't start something ambiguous just because it's high value; she does the discovery work first. When priorities conflict, she goes back to the customer: what does the person paying them need next.\n\n## Outcome\nA working prioritization system without a product function — decisions get made, sequenced, and revisited against real customer signal instead of a roadmap document.\n\n## Learning\nPrioritization without a PM isn't chaos if you have one consistent filter: business-blocking first, then highest-value-and-ready, then customer need as tiebreaker. The discipline is in refusing to start on high-value-but-undefined work just because it's tempting.\n\n## Why This Matters (retrieval angle)\nEvidence of: product thinking without a formal product role, discipline around \"ready\" vs. \"high value,\" and staying customer-anchored under ambiguity. Use for: \"how do you prioritize,\" \"tell me about working without a PM,\" founder/IC product questions.",
+    "source_path": "experiences/maidlink/prioritization-no-pm.md"
+  },
+  {
+    "title": "REST Over EventBridge — Matching Architecture to the Phase",
+    "company": "Avenue One",
+    "period": "2024–2025",
+    "type": "technical",
+    "tags": [
+      "Architecture",
+      "AWS",
+      "Execution",
+      "Delivery"
+    ],
+    "body": "## Situation\nArchitecting a data pipeline at Avenue One, the team looked at the existing infrastructure — Sprockets was built on EventBridge — and naturally proposed using EventBridge here too, since it was already proven in the codebase.\n\n## Action\nSindhuja stepped back and looked at the roadmap and timeline. EventBridge was the right call eventually, but for this specific phase, with a tight shipping window and limited scope, she made the case for something simpler: REST API calls, treated as a one-off bridge between systems, to be evolved later once the scope justified the orchestration layer. She didn't decree it — she laid out the timeline, the roadmap, and the actual near-term need, and made the trade-off explicit to the team.\n\n## Outcome\nThe team agreed. They built the pipeline with REST API calls; other systems functioned normally, and it worked exactly as intended for that phase. Six months later, when scope expanded, they revisited and moved to the more sophisticated EventBridge pattern — but by then they'd already shipped and learned from the simpler version.\n\n## Learning\nArchitecture isn't about picking the objectively \"right\" pattern in a vacuum — it's about matching the architecture to real constraints: timeline, roadmap, what's actually needed right now versus later. Over-engineering for a temporary state costs time and complexity you don't have yet. The team trusted the reasoning because the constraints were real and she owned the decision with them rather than imposing it.\n\n## Why This Matters (retrieval angle)\nEvidence of: architectural judgment under time pressure, and the ability to talk a team out of the \"proven\" pattern when it's not the right fit for the current phase. Use for: \"tell me about an architecture decision,\" \"describe a time you guided a team toward a different technical direction,\" trade-off and technical-leadership questions.",
+    "source_path": "experiences/avenue_one/eventbridge-vs-rest-tradeoff.md"
+  },
+  {
+    "title": "Ron Kolias — Collective Ownership vs. Self-Preservation",
+    "company": "Avenue One",
+    "period": "n/d",
+    "type": "leadership",
+    "tags": [
+      "Mentoring",
+      "Culture",
+      "Ownership"
+    ],
+    "body": "## Situation\nAsked to describe the best engineer she's worked with, contrasted against someone else in her top five. Ron Kolias, at Avenue One, is the answer — not because of his technical output, but because of how he made people around him feel safe admitting what they didn't know.\n\n## Action\nWhat made Ron stand out: Sindhuja felt safe telling him she didn't understand something, because he explained complex things without a trace of ego — you walked away knowing more and feeling better, not smaller. She contrasts him with a second, technically capable engineer whose instinct under pressure was different: when something broke in production, his first move was to check whether the root cause touched his own PR, and step back once it didn't.\n\n## Outcome\nRon's first move in the same situation was to help fix it — whose fault it was didn't enter into it. One operates from collective ownership, the other from self-preservation. Both can ship code; only one makes the team better while doing it.\n\nFor the second engineer, she didn't raise the pattern on the first incident — one data point could be anything. Once it became a pattern, she'd bring it up informally and reframe it around his own reality: the next time something breaks in prod, it might be his code, and he's going to need the team behind him. That reframe landed better than a conversation about team values would have.\n\n## Learning\nThe engineers she most wants to hire and develop aren't the most technical by default — they're the ones who make everyone around them more capable without needing credit for it. That's a hiring and development signal as much as a technical one.\n\n## Why This Matters (retrieval angle)\nEvidence of: what she actually values in engineering talent (psychological safety, collective ownership) versus surface technical strength, and a concrete coaching technique (reframe around self-interest rather than values-language) for engineers who default to self-preservation. Use for: \"describe the best engineer you've worked with,\" \"what do you look for in engineering talent,\" mentoring and team-culture questions.",
+    "source_path": "experiences/avenue_one/best-engineer-ron-kolias.md"
+  },
+  {
+    "title": "Rulan — Supporting a Growth Path Nobody Hired Her Into",
+    "company": "Cybera",
+    "period": "2021–2024",
+    "type": "leadership",
+    "tags": [
+      "Mentoring",
+      "Leadership",
+      "Culture"
+    ],
+    "body": "## Correction note\nAn earlier draft of this story (in `career/sindhuja-behavioural-prep.md`'s ANJU Round-3 Q5) attributed this mentorship arc to someone named \"Ron\" at Cybera, with an ending where he became senior engineer and later a tech lead. Sindhuja confirmed directly that there was no Ron at Cybera — she mentored three engineers there: Rulan, Jaide, and Derek. This file replaces the fabricated version with what actually happened, and only what actually happened.\n\n## Situation\nRulan joined the Cybera SkillUp team as a frontend engineer right around when Sindhuja went on maternity leave. When Sindhuja came back and stepped into the Technical Lead role, she started noticing Rulan gravitating toward UX and design more than straight engineering work.\n\n## Action\nRather than keep Rulan boxed into the frontend engineer role she'd been hired for, Sindhuja supported the pivot — gave her room to lean into design.\n\n## Outcome\nRulan designed the SkillUp logo. She also grew into backend GraphQL work alongside the design side, and was \"phenomenal\" in the team's website redesign — spanning design and backend engineering in a way that wasn't in her original job description.\n\n## Learning\nGrowth paths aren't always about pushing someone up a fixed ladder toward a title. Sometimes the highest-leverage move as a lead is noticing where someone's real strength is actually trending and clearing room for it, even when it's not the role they were hired into.\n\n## Why This Matters (retrieval angle)\nEvidence of: mentoring by recognizing talent rather than forcing a template, and building a team where someone's scope can expand across disciplines (design + backend) rather than staying fixed. Use for: \"tell me about someone you've developed,\" \"describe a time you supported someone's growth,\" mentoring/culture-building questions. Jaide and Derek were also on this team — Jaide's story is noted (thinly) in `projects/cybera-skillup-goa-platform.md`; Derek's isn't captured yet. Don't merge either of their stories into this one.",
+    "source_path": "experiences/cybera/rulan-mentorship-growth-path.md"
+  },
+  {
+    "title": "Shipping AI Without a Mandate",
+    "company": "Avenue One",
+    "period": "2024–2025",
+    "type": "leadership",
+    "tags": [
+      "AI",
+      "Leadership",
+      "Vision",
+      "Innovation",
+      "Ownership"
+    ],
+    "body": "## Situation\nAI wasn't on the official roadmap when Sindhuja joined Avenue One — she was hired to lead backend delivery and the OMS re-platform. But she saw two concrete opportunities where AI would replace manual work, not hypothetically: a buyer probability engine to score acquisition targets, and a document intelligence platform to organize internal deal documents.\n\n## Action\nShe brought proposals to stakeholders for both: a buyer probability engine using OpenAI, and a document intelligence platform using Claude as the AI layer. Both were problems the business already had but hadn't connected to AI as a solution. She didn't ask for permission to prototype — she built a working version of the buyer engine in a week and showed the output directly to the business team.\n\n## Outcome\nThe conversation changed immediately once there was something real to look at. Both systems went into production: the buyer probability engine on OpenAI, and the document intelligence platform (an internal, 200K+ document system) with Claude as the AI layer.\n\n## Learning\nLeadership in that moment meant reading the business need correctly, building credibility with a working system instead of a slide deck, and taking the risk of building before anyone had officially sanctioned it.\n\n## Why This Matters (retrieval angle)\nEvidence of: leading without a mandate, translating a business need into an AI solution nobody had asked for by name, and using a working prototype instead of a pitch to change minds. Use for: \"tell me about a time you led without authority,\" \"describe how you introduced AI into a business that wasn't asking for it,\" founder/innovation-angle questions. The document intelligence platform's access-control architecture is captured separately — see related.",
+    "source_path": "experiences/avenue_one/ai-build-no-mandate.md"
+  },
+  {
+    "title": "SkillUp — Government of Alberta Labour Market Platform",
+    "company": "Cybera",
+    "period": "2021–2024",
+    "type": "project",
+    "tags": [
+      "Leadership",
+      "Hiring",
+      "Scale",
+      "AWS",
+      "Delivery",
+      "Product"
+    ],
+    "body": "## Business Problem\nCybera, an Alberta-based not-for-profit delivering digital infrastructure for government, research, and public-sector innovation, needed to deliver SkillUp — a Government of Alberta funded labour market intelligence platform — under real ministry program requirements, compliance, and accessibility constraints.\n\n## Customer Problem\nAlbertans needed three things a fragmented labour market didn't provide: real-time occupations data, a skills explorer for career-changers to identify transferable skills and training pathways, and a regional employment tool for people considering relocating within Alberta.\n\n## Technical Architecture\nNode.js/TypeScript backend, React frontend, a GraphQL API layer coordinating between data-science pipelines and the frontend, PostgreSQL for relational data, hosted on AWS Amplify and AWS Lightsail. High-throughput ingestion processed roughly 58,000 job advertisements daily, feeding three distinct public-facing services with different data models and user needs.\n\n## Technologies\nNode.js, TypeScript, React, GraphQL, PostgreSQL, AWS Amplify, AWS Lightsail, Jest, TestCafe, BrowserStack, Agile/Scrum.\n\n## Trade-offs\nGoA ministry stakeholders had specific program requirements but weren't technical — architecture had to be translated from policy language into something reliable and compliant without being over-engineered for the actual mandate.\n\n## Challenges\nHigh cross-system dependency between the data-science pipelines and the GraphQL layer; sustained 36-month delivery against evolving GoA program requirements across multiple releases; team coordination across engineers, data scientists, a dedicated UX designer, product ownership, and GoA ministry stakeholders, each with different delivery cadences and definitions of done.\n\n## Outcome\nDelivered all three services at scale — roughly 58,000 job ads processed daily in real time. Sindhuja led all engineering delivery decisions as Technical Lead: architecture, tech stack, design patterns, code quality standards, plus facilitating Agile ceremonies and serving as the primary bridge between GoA stakeholders and the engineering team.\n\n## Lessons Learned\nBuilding trust with non-technical government stakeholders means translating requirements into architecture, not just implementing what's asked for literally. Team growth needs an explicit structure — not just \"years at the company\" — to actually retain people (see the mentorship story, related).\n\n## Future Evolution\nSindhuja moved on from Cybera in 2024; no further evolution captured here.\n\n## AI Opportunities\nNot discussed in any source material for SkillUp specifically — this predates her AI-heavy AWS work. Don't infer or backfill AI angles that weren't part of the actual project.\n\n## Team notes (not yet full stories — capture properly later)\nSindhuja mentored three engineers on this team: **Rulan** (frontend engineer who grew into UX/design and backend GraphQL work — see related story), **Jaide** (joined later, single-handedly implemented one of the flows inside SkillUp — real, but only this one sentence of detail exists so far), and **Derek** (joined alongside Jaide; no story detail captured yet). Don't expand Jaide's or Derek's notes into full narratives without more detail from Sindhuja directly.",
+    "source_path": "experiences/cybera/skillup-goa-platform.md"
+  },
+  {
+    "title": "The Avenue One Deal Lifecycle: OMS, the Data Pipeline, and Transaction Manager",
+    "company": "Avenue One",
+    "period": "2024",
+    "type": "project",
+    "tags": [
+      "Architecture",
+      "AWS",
+      "Ownership",
+      "Delivery",
+      "AI"
+    ],
+    "body": "## Business Problem\nAvenue One ran its entire deal lifecycle, sourcing through closing, on Unqork, an expensive, inflexible no-code platform. As tech lead responsible for eliminating Unqork, Sindhuja owned re-architecting the two core systems in that lifecycle, the Order Management System (OMS) and Transaction Manager (TM), onto modern serverless AWS, while retaining overall accountability for the third system in the same initiative, Property Management, which was rebuilt by someone else on her team.\n\n## Customer Problem\nInternally, this served several teams across Avenue One's real-estate acquisition business: the sourcing team needed a way to turn a cold-called seller into a tracked deal; the business needed a fast, data-driven way to identify likely buyers and value a deal so it could move quickly; and once a deal was won, title/closing partners and the accounting team needed a reliable system tracking each asset's exact state on the path to closing, so funds and title only released once everything checked out.\n\n## Technical Architecture\nTwo distinct systems connected by a data pipeline she also built. **OMS**: AWS AppSync (GraphQL) + DynamoDB. A deal enters OMS once the sourcing team's cold-calling turns a seller into a live deal, sellers often have more than one property. Once a deal is in place, a buybox-based buyer probability prediction system (OpenAI API on AWS Lambda) and an AVM (Automated Valuation Model) run in parallel, generating structured signals used to identify and reach out to likely buyers. Buyers can bid on the full deal or a subset of assets within it. Once a bid is won, the data pipeline enriches related systems and moves the won asset(s) into Transaction Manager. **Transaction Manager**: AWS Lambda + Aurora RDS, a state machine tracking each asset from \"under contract\" through \"inspection\" to \"ready to close.\" Title and closing partners verify title at that stage; once verified, the accounting team releases funds to close. After close, the asset routes to the Property Management product if it's an on-market deal and the buyer wants Avenue One's property management services, or directly to the buyer otherwise.\n\n## Technologies\nAWS AppSync, DynamoDB, Lambda, Aurora RDS (PostgreSQL), OpenAI API, Node.js/TypeScript.\n\n## Trade-offs\nOMS and Transaction Manager deliberately used different data stores, DynamoDB for OMS versus Aurora RDS for Transaction Manager, rather than standardizing on one database across both systems. The specific reasoning behind that split wasn't captured in detail, noted as a gap rather than invented.\n\n## Challenges\nCoordinating a single asset's state reliably across three separate systems (OMS, the pipeline, Transaction Manager) and multiple internal/external parties (sourcing team, buyers, title and closing partners, accounting) without losing track of where it was in the lifecycle. Multi-property deals added real complexity, since buyers could win a subset of a deal rather than the whole thing, meaning the pipeline had to split and route individual assets rather than treating a deal as one atomic unit.\n\n## Outcome\nOMS shipped in 70 days (against a 60-day target). Transaction Manager shipped in roughly 3 months. Property Management was rebuilt separately by someone else on her team, under the same Unqork-elimination initiative. Combined, eliminating Unqork across all three systems saved Avenue One approximately $650K/year in platform fees, savings she was accountable for as the tech lead who owned the overall initiative, even though she did not personally build Property Management.\n\n## Lessons Learned\nNot yet captured in detail, gap noted rather than invented.\n\n## Future Evolution\nNot yet captured in detail, gap noted rather than invented.\n\n## AI Opportunities\nThe buybox-based buyer prediction system and the AVM underwriting running in parallel at deal-entry are the clearest existing AI integration point in this lifecycle, already shipped, not hypothetical.",
+    "source_path": "experiences/avenue_one/deal-lifecycle-oms-pipeline-transaction-manager.md"
+  },
+  {
+    "title": "The Dog Scratch That Got MaidLink Bonded and Insured",
+    "company": "MaidLink",
+    "period": "2025",
+    "type": "leadership",
+    "tags": [
+      "Ownership",
+      "Startup",
+      "Operations"
+    ],
+    "body": "## Situation\nIn early 2025, before MaidLink had an app, back when the business ran on phone calls and Excel, one of the maids got a small scratch from a dog while on a cleaning job. The dog was playful, not aggressive, so the injury itself was minor.\n\n## Action\nThe incident forced a harder question than the scratch itself: what if it hadn't been a playful dog? What if the maid had been seriously injured instead? That fear is what pushed Sindhuja and Muni to get MaidLink properly bonded and insured, through The Co-operators, well before the app existed.\n\n## Outcome\nMaidLink became a bonded and insured business while it was still just phone calls and a spreadsheet. That coverage is now a real trust signal for customers letting workers into their homes, not something added later for appearances.\n\n## Learning\nThe gap between \"small scratch\" and \"seriously injured\" was luck, not risk management. A minor incident is a warning, not a relief. Waiting for the serious version of something to actually happen before getting covered isn't a plan, it's betting on luck holding.\n\n## Why This Matters (retrieval angle)\nThis is direct, lived experience being on the insured/bonded side of a compliance relationship, not just evaluating or vetting others (contrast with the Avenue One builder-database and RBAC stories, which are about vetting others). Strong for questions about risk management, trust and safety, or founder judgment under real stakes, and directly relevant to compliance-adjacent roles like the Tough Leaf/ClearComply interview that surfaced it.",
+    "source_path": "experiences/maidlink/insurance-bonding-after-incident.md"
+  },
+  {
+    "title": "The Hiring Call She Got Right But Couldn't Win",
+    "company": "Cybera",
+    "period": "~2022",
+    "type": "leadership",
+    "tags": [
+      "Hiring",
+      "Conflict",
+      "Culture",
+      "Communication"
+    ],
+    "body": "## Situation\nCybera's team dynamic was junior and mid-level engineers who solved problems by talking things through openly — collaborative, and only workable if people were receptive to feedback. They were hiring for a senior engineering role, and a candidate came through who was technically very strong but, in the interview loop, didn't take feedback well: when challenged on a decision, he'd defend and explain why his way was right instead of exploring the question.\n\n## Action\nSindhuja flagged this directly to her manager, specific about the behavior and why it mattered for this particular team: \"Technically he's solid, but my team isn't equipped to handle someone who doesn't absorb feedback. They solve problems through dialogue, and that only works if everyone's receptive. This person will create friction. Hiring him risks breaking the collaboration model that makes this team effective.\"\n\n## Outcome\nHe got hired anyway — the hiring manager prioritized technical strength. Ninety days in, her manager started noticing the team was always on their phones, avoiding 1-on-1s. They'd gone defensive because they couldn't engage with him directly — he'd just prove his point instead of exploring theirs. They had to let him go.\n\n## Learning\nShe was right about the fit, but she didn't frame it in a way that could override the business decision. She should have come in with more specifics from the start — not just \"I observed this in the loop\" but the exact mechanism of how it breaks the collaboration model, and what it would cost the team, in terms concrete enough to compete with \"he's technically strong.\" The deeper lesson: culture fit isn't soft, it's structural. If a team's engine is feedback loops and collaborative problem-solving, hiring someone who rejects feedback breaks the engine — that's a technical risk, not a personality judgment. She learned to document those observations in real time and be louder about them earlier in the process.\n\n## Why This Matters (retrieval angle)\nEvidence of: hiring judgment, willingness to disagree with a hiring manager, and — just as important — honest reflection on being right but not persuasive enough. Use for: \"tell me about a hiring decision you disagreed with,\" \"describe a time you were overruled,\" \"how do you evaluate culture fit,\" any question probing self-awareness after being proven correct.",
+    "source_path": "experiences/cybera/hiring-culture-fit-miss.md"
+  },
+  {
+    "title": "The Try-Catch That Hid a Real Bug",
+    "company": "Avenue One",
+    "period": "2024–2025",
+    "type": "technical",
+    "tags": [
+      "AWS",
+      "Architecture",
+      "Automation",
+      "Operations",
+      "Ownership"
+    ],
+    "body": "## Situation\nBuilding the document management system at Avenue One, the infrastructure-as-code was written in SST (Serverless Stack) — new to her, as was managing production infrastructure at that scale. The first local deploy failed: some resources tried to be created but already existed.\n\n## Action\nShe read it as an idempotency issue and wrapped the failure in a try-catch. Tested locally — the second run worked perfectly. Confident it was solved, she moved it to the dev environment and deployed.\n\n## Outcome\nIt failed immediately in dev. The error she'd wrapped was now swallowing legitimate failures, because dev's infrastructure model was completely different: the CDK stack there gets deleted and recreated on every deploy — it's not idempotent. The try-catch was looking for pieces that would never exist, and it hid the real problem instead of solving it.\n\n## Learning\nShe'd made an assumption based on local behavior without understanding how the deployment pipeline actually worked — local and dev environments have fundamentally different infrastructure patterns, and behavior doesn't carry across. Now, before adding a workaround, she asks how the system actually behaves in the target environment and what the deployment model is, and tests there — not just locally. Infrastructure assumptions hide bugs: it's easy to fix something locally and think it's done, but without understanding the deployment model, a fix can mask the problem instead of solving it.\n\n## Why This Matters (retrieval angle)\nEvidence of: learning from a real production-adjacent mistake, and a specific, transferable principle (don't assume environment parity; verify the deployment model before adding error-handling workarounds). Use for: \"tell me about a time you failed,\" \"describe a mistake and how you handled it,\" infrastructure/DevOps technical-depth questions.",
+    "source_path": "experiences/avenue_one/sst-cdk-environment-assumption.md"
+  },
+  {
+    "title": "TRC Garlands — Configurator-First Website Rebuild",
+    "company": "TRC Garlands",
+    "period": "2026",
+    "type": "technical",
+    "tags": [
+      "Architecture",
+      "Builder",
+      "Side Project"
+    ],
+    "body": "## Situation\nTRC Garlands is her husband Muni's Calgary garland-making business — real, currently running on manual process. She's rebuilding it as a configurator-first website, on her own account (github.com/sindhujaIBM/trc-garlands), not as paid employment but as a real side build.\n\n## Action\nWrote the full design doc suite first — product/UX, configurator spec, pricing engine, data + API, AWS + CMS, AI roadmap — before writing code. Chose AppSync GraphQL + DynamoDB for the backend, picking GraphQL over REST deliberately when the question came up. Deliberately followed MaidLink's component organization for the Next.js App Router structure, but not its visual palette — reusing a working pattern without reusing a brand.\n\n## Outcome\nFull design doc suite committed and pushed as of July 2026; code scaffolding is the next phase, not yet built.\n\n## Learning\nNot yet captured — revisit once the build itself is further along.\n\n## Why This Matters (retrieval angle)\nEvidence of: building for someone else's real business (not just her own), architecture decision-making outside of paid work (GraphQL over REST, chosen deliberately), and reusing a proven component pattern without copying the brand. Use for: side-project/personal-build questions, \"tell me about something you built outside of work.\"",
+    "source_path": "experiences/trc/website-rebuild.md"
+  },
+  {
+    "title": "When AI Is the Coder, the Architecture Is Still Yours",
+    "company": "—",
+    "period": "2026",
+    "type": "personal-growth",
+    "tags": [
+      "AI",
+      "Vision",
+      "Architecture",
+      "Builder"
+    ],
+    "body": "## Situation\nWorking with Claude to build production systems (at Avenue One and at MaidLink), Sindhuja noticed the real skill shift wasn't in how she wrote prompts.\n\n## Action\nIt was in holding the architectural vision the AI couldn't hold for her. Before AI touches a system, she has to already know what that system should look like — the direction, the review, the course-correction. That's the part that doesn't get automated away.\n\n## Outcome\nA working principle for how she builds with AI day to day: she stays the architect regardless of who's writing the code.\n\n## Learning\nThe hardest part of building with AI isn't the prompting — it's the architecture. Claude doesn't know what the system should look like; she does. That's the job that shifted, not away, but toward.\n\n## Why This Matters (retrieval angle)\nEvidence of: a genuine, lived perspective shift on what her value is when AI writes code — directly relevant to any \"how has AI changed how you work\" or \"what's the future of engineering roles\" question, and a credible AI-builder angle for content and interviews alike. Use for: AI-philosophy questions, \"how do you use AI in your work,\" thought-leadership content.",
+    "source_path": "reflections/ai-as-coder-architect-as-human.md"
+  },
+  {
+    "title": "When File-Level Permissions Stopped Working at 200K Documents",
+    "company": "Avenue One",
+    "period": "2024–2025",
+    "type": "technical",
+    "tags": [
+      "Security",
+      "Architecture",
+      "Product",
+      "AWS"
+    ],
+    "body": "## Situation\nThe internal document intelligence platform Sindhuja built at Avenue One (a secure, serverless, VPC-only internal document system, later scaling past 200,000 documents) started with file-level access controls — permissions set per document.\n\n## Action\nAs the document count grew, file-level ACLs became unmanageable fast. She replaced them with role-based access control: three tiers — User, Manager, Admin — implemented via Auth0.\n\n## Outcome\nA permission model that scaled with the organization instead of the file count.\n\n## Learning\nAccess control design should follow how people actually work, not how files happen to be organized. File-level granularity feels precise early on, but it doesn't scale with volume — role-based design does, because roles map to how an organization actually operates.\n\n## Why This Matters (retrieval angle)\nEvidence of: recognizing when an early technical choice stops scaling, and redesigning access control as a product decision, not just a security one. Use for: security/architecture technical-depth questions, \"tell me about a system you had to redesign as it scaled,\" \"describe an access-control or permissions decision.\" Same underlying platform as the \"shipping AI without a mandate\" leadership story (see related) — this is the technical/security lens on it.",
+    "source_path": "experiences/avenue_one/rbac-redesign.md"
+  }
+]
