@@ -31,6 +31,19 @@
     "source_path": "experiences/maidlink/nat-gateway-cost-discovery.md"
   },
   {
+    "title": "Cutting Asset Data Ingestion from 48 Hours to Under 5 Minutes",
+    "company": "Avenue One",
+    "period": "2024–2025",
+    "type": "technical",
+    "tags": [
+      "Architecture",
+      "Automation",
+      "Execution"
+    ],
+    "body": "## Situation\nA data pipeline at Avenue One relied on cron and Astronomer (managed Airflow) jobs to populate downstream data sources, including Snowflake, from uploaded asset data. On a good day, it took 48 hours before the data was usable.\n\n## Action\nReplaced the batch cron/Astronomer scheduling with webhook-triggered API calls, invoked on demand instead of run on a fixed schedule. The more complex path — full EventBridge/SQS orchestration — was considered and deliberately set aside in favor of simple REST calls, since the real deliverable didn't require it.\n\n## Outcome\nIngestion time dropped from 48 hours to under 5 minutes.\n\n## Learning\nComplex isn't always better. The simplest architecture that meets the actual requirement is often the right one — this was a deliberate choice to avoid over-building, not a default.\n\n## Why This Matters (retrieval angle)\nEvidence of: measurable technical impact (48 hours → under 5 minutes) and architectural restraint — choosing the simple solution on purpose rather than reaching for the more sophisticated pattern by default. Use for: \"tell me about a time you improved a slow process,\" \"describe an architecture trade-off you made,\" AWS/data-pipeline technical-depth questions.",
+    "source_path": "experiences/avenue_one/oms-data-pipeline-ingestion-public.md"
+  },
+  {
     "title": "Evaluating 4 LLM Providers for HQ",
     "company": "MaidLink",
     "period": "2026-04",
@@ -127,7 +140,7 @@
       "Execution",
       "Delivery"
     ],
-    "body": "## Situation\nArchitecting a data pipeline at Avenue One, the team looked at the existing infrastructure — Sprockets was built on EventBridge — and naturally proposed using EventBridge here too, since it was already proven in the codebase.\n\n## Action\nSindhuja stepped back and looked at the roadmap and timeline. EventBridge was the right call eventually, but for this specific phase, with a tight shipping window and limited scope, she made the case for something simpler: REST API calls, treated as a one-off bridge between systems, to be evolved later once the scope justified the orchestration layer. She didn't decree it — she laid out the timeline, the roadmap, and the actual near-term need, and made the trade-off explicit to the team.\n\n## Outcome\nThe team agreed. They built the pipeline with REST API calls; other systems functioned normally, and it worked exactly as intended for that phase. Six months later, when scope expanded, they revisited and moved to the more sophisticated EventBridge pattern — but by then they'd already shipped and learned from the simpler version.\n\n## Learning\nArchitecture isn't about picking the objectively \"right\" pattern in a vacuum — it's about matching the architecture to real constraints: timeline, roadmap, what's actually needed right now versus later. Over-engineering for a temporary state costs time and complexity you don't have yet. The team trusted the reasoning because the constraints were real and she owned the decision with them rather than imposing it.\n\n## Why This Matters (retrieval angle)\nEvidence of: architectural judgment under time pressure, and the ability to talk a team out of the \"proven\" pattern when it's not the right fit for the current phase. Use for: \"tell me about an architecture decision,\" \"describe a time you guided a team toward a different technical direction,\" trade-off and technical-leadership questions.",
+    "body": "## Situation\nArchitecting a data pipeline at Avenue One, the team looked at the existing infrastructure — Sprockets was built on EventBridge — and naturally proposed using EventBridge here too, since it was already proven in the codebase.\n\n## Action\nSindhuja stepped back and looked at the roadmap and timeline. For this specific phase, with a tight shipping window and limited scope, she made the case for something simpler: REST API calls, treated as a bridge between systems, rather than building out a full EventBridge orchestration layer the near-term scope didn't justify. She didn't decree it — she laid out the timeline, the roadmap, and the actual near-term need, and made the trade-off explicit to the team.\n\n## Outcome\nThe team agreed. They built the pipeline with REST API calls; other systems functioned normally, and it worked exactly as intended. The simpler approach stayed the architecture — there was no later migration to EventBridge.\n\n## Learning\nArchitecture isn't about picking the objectively \"right\" pattern in a vacuum — it's about matching the architecture to real constraints: timeline, roadmap, what's actually needed right now versus later. Over-engineering for a temporary state costs time and complexity you don't have yet. The team trusted the reasoning because the constraints were real and she owned the decision with them rather than imposing it.\n\n## Why This Matters (retrieval angle)\nEvidence of: architectural judgment under time pressure, and the ability to talk a team out of the \"proven\" pattern when it's not the right fit for the current phase. Use for: \"tell me about an architecture decision,\" \"describe a time you guided a team toward a different technical direction,\" trade-off and technical-leadership questions.",
     "source_path": "experiences/avenue_one/eventbridge-vs-rest-tradeoff.md"
   },
   {
