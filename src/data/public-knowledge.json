@@ -71,6 +71,22 @@
     "source_path": "experiences/side_projects/linkedin-mcp-server.md"
   },
   {
+    "title": "MaidLink AI Estimator — Architecture and Cost",
+    "company": "MaidLink",
+    "period": "2026",
+    "type": "technical",
+    "tags": [
+      "AI",
+      "AWS",
+      "Bedrock",
+      "Architecture",
+      "Product",
+      "Builder"
+    ],
+    "body": "## Business Problem\nHomeowners want to know how much a cleaning job will cost before booking — the top source of anxiety in the transaction. Without an accurate estimate, pricing disputes and scope renegotiation break trust on both sides of the marketplace.\n\n## Customer Problem\nTwo-sided: clients want a price before a cleaner shows up. Cleaning providers need the estimate calibrated to an efficient cleaner's pace, not an average one, or the business absorbs the gap between quote and reality.\n\n## Technical Architecture\nA client uploads photos of their space directly to S3 (Lambda never touches the raw bytes). Amazon Nova Lite on AWS Bedrock analyzes the photos and returns room-by-room cleaning time estimates, separate 1-cleaner and 2-cleaner hour figures, a full cleaning checklist, and coverage warnings when the photos don't fully capture the space. The upload pipeline itself runs through Lambda-layer security controls: JWT auth, rate limiting, PII-safe S3 key prefixes.\n\n## Technologies\nAWS Bedrock, Amazon Nova Lite, AWS Lambda, S3, JWT.\n\n## Trade-offs\nNot yet captured in detail — gap noted rather than invented.\n\n## Challenges\nNot yet captured in detail — gap noted rather than invented.\n\n## Outcome\nCost per analysis: $0.0012. At 1,000 analyses/month: $1.20.\n\n## Lessons Learned\nNot yet captured in detail — gap noted rather than invented.\n\n## Future Evolution\nNot yet captured in detail — gap noted rather than invented.\n\n## AI Opportunities\nNot yet captured in detail — gap noted rather than invented.\n\n## Why This Matters (retrieval angle)\nEvidence of: production multimodal AI on AWS Bedrock, and cost-conscious AI architecture (sub-cent per inference). Use for: \"what have you built with AI,\" \"tell me about a production AI feature you shipped,\" AWS/Bedrock technical-depth questions. This is currently the only public-sensitivity capture of MaidLink's flagship AI feature — the fuller platform context lives in `platform-overview.md` (internal).",
+    "source_path": "experiences/maidlink/ai-estimator-architecture-cost.md"
+  },
+  {
     "title": "OMS Re-platform Under Ambiguity and a Hostile Handover",
     "company": "Avenue One",
     "period": "2024",

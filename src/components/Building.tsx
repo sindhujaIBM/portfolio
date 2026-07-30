@@ -23,7 +23,6 @@ export default function Building() {
             <p>
               Cost per analysis: <strong>$0.0012</strong>. At 1,000 analyses/month: $1.20.
               Built on <strong>AWS Bedrock + Amazon Nova Lite</strong> on Lambda.
-              Currently building a scheduling agent — agentic AI, not just generative.
             </p>
           </div>
           <div className="card-links">
