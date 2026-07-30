@@ -448,6 +448,24 @@ nav {
   margin-top: 0.25rem;
 }
 
+.repo-demo {
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem 0.65rem;
+  line-height: 1.5;
+}
+
+.repo-demo code {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  background: var(--bg);
+  padding: 0.05rem 0.3rem;
+  border-radius: 3px;
+  color: var(--text);
+}
+
 @media (max-width: 640px) {
   .repo-grid {
     grid-template-columns: 1fr;

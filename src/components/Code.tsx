@@ -12,8 +12,8 @@ export default function Code() {
             </div>
             <p className="repo-desc">
               Full-stack agentic AI platform for MaidLink. AI Estimator uses AWS Bedrock + Amazon Nova
-              Lite to analyze room photos and return time estimates at $0.001/analysis. Scheduling agent
-              handles job dispatch and maid coordination. Sole engineer, live in production.
+              Lite to analyze room photos and return time estimates at $0.0012/analysis. Sole engineer,
+              live in production.
             </p>
             <div className="repo-stack">
               <span>TypeScript</span>
@@ -82,6 +82,51 @@ export default function Code() {
               </a>
               <a
                 href="https://github.com/sindhujaIBM/library-management-system"
+                target="_blank"
+                rel="noopener"
+                className="link-muted"
+              >
+                GitHub
+              </a>
+            </div>
+          </div>
+
+          <div className="repo-card">
+            <div className="repo-card-header">
+              <span className="repo-name">Subcontractor Compliance Tracker</span>
+              <span className="repo-visibility">Public</span>
+            </div>
+            <p className="repo-desc">
+              Construction-compliance prototype built for a Founding Product Engineer take-home
+              assessment (inspired by Tough Leaf&apos;s ClearComply concept). Compliance managers track
+              subcontractor certificates of insurance, workers&apos; comp, and EMR expiration; AWS Bedrock
+              (Claude Haiku) extracts structured data from uploaded documents. Two roles: compliance
+              manager and subcontractor portal.
+            </p>
+            <div className="repo-stack">
+              <span>React</span>
+              <span>TypeScript</span>
+              <span>Vite</span>
+              <span>AWS Lambda</span>
+              <span>DynamoDB</span>
+              <span>Bedrock</span>
+            </div>
+            <p className="repo-demo">
+              Demo (synthetic data) — Compliance Manager: <code>compliance</code> /{" "}
+              <code>ClearComply2026!</code> at <code>/login</code> · Subcontractor Portal:{" "}
+              <code>apex-electrical</code> / <code>Passw0rd!</code> at <code>/sub-portal/login</code>
+            </p>
+            <div className="repo-links">
+              <a
+                href="https://ds4wgujh68dua.cloudfront.net/"
+                target="_blank"
+                rel="noopener"
+                className="link-arrow"
+              >
+                Live app →
+              </a>
+              <a
+                href="https://github.com/sindhujaIBM/subcontractor-compliance-tracker"
                 target="_blank"
                 rel="noopener"
                 className="link-muted"
