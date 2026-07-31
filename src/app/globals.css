@@ -104,6 +104,15 @@ nav {
   padding: 5rem 2rem 4rem;
 }
 
+.hero-avatar {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
+}
+
 .hero-label {
   font-size: 13px;
   font-weight: 500;

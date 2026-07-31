@@ -1,6 +1,16 @@
+import Image from "next/image";
+
 export default function Hero() {
   return (
     <section className="hero">
+      <Image
+        src="/headshot.jpg"
+        alt="Sindhuja Kali Srinivasan"
+        width={104}
+        height={104}
+        className="hero-avatar"
+        priority
+      />
       <p className="hero-label">AI Engineer · Engineering Leader · Startup Founder</p>
       <h1>
         Still writing the code.
