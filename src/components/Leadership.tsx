@@ -19,35 +19,39 @@ export default function Leadership() {
             Right now I&apos;m building a production AWS serverless application on Bedrock — solo, while
             co-running a startup. Shipping real agentic AI, not just talking about it. That&apos;s the proof.
           </p>
+          <p>
+            The rare part isn&apos;t any one piece of this on its own — it&apos;s the combination. I can
+            architect the system, ship the AI feature, lead the team through it, and still explain the
+            trade-off to a stakeholder in plain language.
+          </p>
         </div>
 
         <div className="skills-row">
           <div className="skill-group">
-            <h4>Leadership</h4>
+            <h4>AI Engineering</h4>
+            <ul>
+              <li>AWS Bedrock · Amazon Nova · Claude API</li>
+              <li>OpenAI API</li>
+              <li>Agentic AI · multi-agent orchestration</li>
+              <li>LLM provider evaluation (cost, privacy, deployability)</li>
+            </ul>
+          </div>
+          <div className="skill-group">
+            <h4>Cloud Architecture</h4>
+            <ul>
+              <li>AWS Serverless (Lambda, API Gateway, S3)</li>
+              <li>DynamoDB · Aurora RDS · OpenSearch</li>
+              <li>Auth0 · RBAC design</li>
+              <li>CI/CD · DevOps practices</li>
+            </ul>
+          </div>
+          <div className="skill-group">
+            <h4>Engineering Leadership</h4>
             <ul>
               <li>Engineering management</li>
               <li>Team building & mentoring</li>
               <li>Technical roadmapping</li>
               <li>Cross-functional delivery</li>
-            </ul>
-          </div>
-          <div className="skill-group">
-            <h4>Technical</h4>
-            <ul>
-              <li>Node.js · TypeScript · React</li>
-              <li>AWS Bedrock · Amazon Nova · Claude API</li>
-              <li>Agentic AI · Multi-agent orchestration</li>
-              <li>AWS Serverless (Lambda, API GW, S3)</li>
-              <li>CI/CD · DevOps practices</li>
-            </ul>
-          </div>
-          <div className="skill-group">
-            <h4>Startup</h4>
-            <ul>
-              <li>Full-stack solo building</li>
-              <li>Shipped under real constraints</li>
-              <li>Alberta Catalyzer pre-accelerator</li>
-              <li>0→1 product development</li>
             </ul>
           </div>
         </div>

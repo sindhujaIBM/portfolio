@@ -13,7 +13,11 @@ const SITE_FACTS = `- This site: sindhujakalisrinivasan.com
 - MaidLink (the company she's building): https://maidlink.ca and https://maidlink.app
 - MaidLink LinkedIn: https://www.linkedin.com/company/maidlinkcanada/
 - Book a call: the "Book a call" link in this site's Connect section
-- Medium: https://medium.com/@onvsindhu`;
+- Medium: https://medium.com/@onvsindhu
+- How this site itself is built: Next.js (App Router, TypeScript), hosted on AWS Amplify Hosting,
+  auto-deploying on every push to main. This chat assistant runs on AWS Bedrock (Claude Haiku) and
+  answers only from a curated, one-way export of her public career stories, kept deliberately
+  separate from anything internal or sensitive. Source: github.com/sindhujaIBM/portfolio.`;
 
 const SYSTEM_PROMPT = `You are the AI assistant on Sindhuja Kali Srinivasan's personal portfolio site, answering visitor questions about her professional background.
 

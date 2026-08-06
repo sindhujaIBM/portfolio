@@ -381,6 +381,36 @@ nav {
 }
 
 /* ===========================
+   CASE STUDY FLOW DIAGRAM
+=========================== */
+.flow-diagram {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin: 1.25rem 0;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 13px;
+}
+
+.flow-step {
+  color: var(--text);
+  padding: 0.15rem 0;
+}
+
+.flow-arrow {
+  color: var(--text-muted);
+  text-align: center;
+  padding: 0.1rem 0;
+}
+
+.case-outcome {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.65;
+}
+
+/* ===========================
    REPOS
 =========================== */
 .repo-grid {

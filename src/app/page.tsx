@@ -1,8 +1,10 @@
 import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
+import AIWork from "@/components/AIWork";
 import Building from "@/components/Building";
 import Code from "@/components/Code";
+import CaseStudies from "@/components/CaseStudies";
 import Leadership from "@/components/Leadership";
 import Writing from "@/components/Writing";
 import Connect from "@/components/Connect";
@@ -15,8 +17,10 @@ export default function Home() {
       <Nav />
       <Hero />
       <About />
+      <AIWork />
       <Building />
       <Code />
+      <CaseStudies />
       <Leadership />
       <Writing />
       <Connect />
