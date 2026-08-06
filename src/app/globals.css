@@ -381,27 +381,48 @@ nav {
 }
 
 /* ===========================
-   CASE STUDY FLOW DIAGRAM
+   CASE STUDY ARCHITECTURE DIAGRAM
 =========================== */
-.flow-diagram {
+.diagram-wrap {
   background: var(--bg-alt);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 1rem 1.25rem;
+  padding: 1rem;
   margin: 1.25rem 0;
-  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-  font-size: 13px;
+  display: flex;
+  justify-content: center;
 }
 
-.flow-step {
-  color: var(--text);
-  padding: 0.15rem 0;
+.architecture-diagram {
+  width: 100%;
+  max-width: 380px;
+  display: block;
+  overflow: visible;
 }
 
-.flow-arrow {
-  color: var(--text-muted);
+.diagram-box-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 0.1rem 0;
+  padding: 2px 8px;
+  box-sizing: border-box;
+}
+
+.diagram-box-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.25;
+}
+
+.diagram-box-sub {
+  font-size: 10.5px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  color: var(--text-muted);
+  margin-top: 2px;
 }
 
 .case-outcome {
