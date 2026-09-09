@@ -135,6 +135,54 @@ export default function Code() {
               </a>
             </div>
           </div>
+
+          <div className="repo-card">
+            <div className="repo-card-header">
+              <span className="repo-name">LinkedIn MCP Server</span>
+              <span className="repo-visibility">Public</span>
+            </div>
+            <p className="repo-desc">
+              Published MCP (Model Context Protocol) server that lets an AI agent post, comment, and
+              read analytics on LinkedIn — for a personal profile or a company page. Credentials come
+              from a .env file, not hardcoded accounts; each tool takes a generic profile or company
+              role. Auto-crawled and scored 4.1/5 by Glama, an MCP server directory, with perfect
+              marks on tool-naming clarity, tool-purpose disambiguation, and right-sized scope.
+            </p>
+            <div className="repo-stack">
+              <span>TypeScript</span>
+              <span>Node.js</span>
+              <span>MCP SDK</span>
+            </div>
+            <p className="repo-demo">
+              Install: <code>npm install -g @sindhujaks/linkedin-mcp</code>
+            </p>
+            <div className="repo-links">
+              <a
+                href="https://github.com/sindhujaIBM/linkedin-mcp"
+                target="_blank"
+                rel="noopener"
+                className="link-arrow"
+              >
+                GitHub →
+              </a>{" "}
+              <a
+                href="https://www.npmjs.com/package/@sindhujaks/linkedin-mcp"
+                target="_blank"
+                rel="noopener"
+                className="link-muted"
+              >
+                npm
+              </a>{" "}
+              <a
+                href="https://glama.ai/mcp/servers/sindhujaIBM/linkedin-mcp"
+                target="_blank"
+                rel="noopener"
+                className="link-muted"
+              >
+                Glama (4.1/5)
+              </a>
+            </div>
+          </div>
         </div>
         <div className="build-log-note" style={{ marginTop: "1.5rem" }}>
           <p>Most production work lives in private repos. Public repos and contributions at github.com/sindhujaIBM.</p>
