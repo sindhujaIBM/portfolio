@@ -1,27 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { askAssistant } from "@/lib/bedrock";
+import { isRateLimited } from "@/lib/rate-limit";
 
 const MAX_QUESTION_LENGTH = 500;
-const RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000;
-const RATE_LIMIT_MAX_REQUESTS = 8;
-
-// Per-instance only — Amplify/Lambda compute isn't guaranteed to reuse the same
-// instance across requests, so this throttles bursts on a warm instance rather
-// than enforcing a hard global cap. Good enough as a first line of defense.
-const requestLog = new Map<string, number[]>();
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const timestamps = (requestLog.get(ip) ?? []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
-  timestamps.push(now);
-  requestLog.set(ip, timestamps);
-  return timestamps.length > RATE_LIMIT_MAX_REQUESTS;
-}
 
 export async function POST(request: NextRequest) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
 
-  if (isRateLimited(ip)) {
+  if (await isRateLimited(ip)) {
     return NextResponse.json({ error: "Too many questions — try again in a few minutes." }, { status: 429 });
   }
 
