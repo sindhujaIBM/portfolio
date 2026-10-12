@@ -136,6 +136,10 @@ export default function Code() {
             </div>
           </div>
 
+        </div>
+
+        <h3 className="repo-subheading">npm packages</h3>
+        <div className="repo-grid">
           <div className="repo-card">
             <div className="repo-card-header">
               <span className="repo-name">LinkedIn MCP Server</span>
