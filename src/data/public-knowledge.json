@@ -45,6 +45,19 @@
     "source_path": "experiences/maidlink/nat-gateway-cost-discovery.md"
   },
   {
+    "title": "Building a TOTP/HOTP Library From Scratch",
+    "company": "—",
+    "period": "2026",
+    "type": "technical",
+    "tags": [
+      "Builder",
+      "Security",
+      "AI"
+    ],
+    "body": "## Situation\nYears earlier, at Paysafe, built and published an internal 2FA npm package used across product teams on the Skrill platform (PCI-DSS regulated). Wanted to build a new one for her own public portfolio, but this time from true first principles instead of generating it, going deep enough to defend every line of the algorithm cold, not just ship something that runs.\n\n## Action\nBuilt `@sindhujaks/totp`, a zero-dependency TypeScript implementation of TOTP/HOTP (RFC 6238 / RFC 4226), piece by piece: base32 encoding hand-rolled with no library, HMAC-based dynamic truncation, the time-step counter swap that turns HOTP into TOTP, cryptographically secure secret generation with a hard floor on key length, and verification with constant-time comparison and real replay protection.\n\nPushed the design past the first working version twice. First: made the library deliberately storage-agnostic. A TOTP secret can't be stored the way a password is, the server needs the real value back every time, not just a one-way hash, so encryption-at-rest has to be the caller's job, not the library's. Second: the verification loop's first draft returned as soon as it found a match inside the drift window, technically correct, but response timing could still reveal which time-step matched. Rejected \"a well-known library does it this way\" as a justification and rewrote it to always do the identical amount of work regardless of outcome, closing the leak instead of inheriting it.\n\nPublished it as a real public package: GitHub repo, then npm. The npm publish itself got blocked by her own account's 2FA, now enforced via a hardware security key rather than an authenticator app, since npm phased out new TOTP-based 2FA enrollment in late 2025. Used npm's newer staged-publish flow (`npm stage publish` → `npm stage approve`) built for exactly this case: a write operation that needs real proof-of-presence from a 2FA method a CLI can't ask for a typed code.\n\n## Outcome\nLive at github.com/sindhujaIBM/totp-toolkit and npmjs.com/package/@sindhujaks/totp. 22 tests passing, checked against the actual official RFC 4226 and RFC 6238 published test vectors, not just \"looks right.\"\n\n## Learning\n\"A popular library does it this way\" is not a security argument. The constant-time verification loop's original shortcut was already accepted practice elsewhere; rewriting it to remove even a minor, low-value timing leak was the right call anyway, accepted elsewhere isn't the same as correct.\n\nTracing the algorithm by hand, byte by byte, before trusting any of it took longer than generating a working version would have. That gap is the whole point, it's the difference between having shipped something and being able to stand behind every line of it under real questioning.\n\n## Why This Matters (retrieval angle)\nEvidence of: real applied cryptography depth (HMAC, constant-time comparison, timing attacks), security-first design thinking (storage boundaries, Kerckhoffs's principle in practice), and a demonstrated instinct to push back on \"good enough because others do it\" instead of accepting precedent uncritically. Use for: \"tell me about a security-critical system you built,\" \"describe a time you questioned an accepted practice instead of deferring to it,\" \"how do you approach learning something you don't yet understand deeply,\" \"tell me about applying cryptography or security principles in practice.\"",
+    "source_path": "experiences/side_projects/totp-toolkit.md"
+  },
+  {
     "title": "Cutting Asset Data Ingestion from 48 Hours to Under 5 Minutes",
     "company": "Avenue One",
     "period": "2024–2025",

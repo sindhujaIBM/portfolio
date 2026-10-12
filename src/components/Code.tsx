@@ -183,6 +183,46 @@ export default function Code() {
               </a>
             </div>
           </div>
+
+          <div className="repo-card">
+            <div className="repo-card-header">
+              <span className="repo-name">totp-toolkit</span>
+              <span className="repo-visibility">Public</span>
+            </div>
+            <p className="repo-desc">
+              Zero-dependency TypeScript implementation of TOTP/HOTP two-factor authentication
+              (RFC 6238 / RFC 4226), built from first principles, not generated. Base32, HMAC-based
+              dynamic truncation, constant-time verification with drift-window and replay
+              protection, all checked against the official RFC test vectors.
+            </p>
+            <div className="repo-stack">
+              <span>TypeScript</span>
+              <span>Node.js crypto</span>
+              <span>RFC 6238</span>
+              <span>RFC 4226</span>
+            </div>
+            <p className="repo-demo">
+              Install: <code>npm install @sindhujaks/totp</code>
+            </p>
+            <div className="repo-links">
+              <a
+                href="https://github.com/sindhujaIBM/totp-toolkit"
+                target="_blank"
+                rel="noopener"
+                className="link-arrow"
+              >
+                GitHub →
+              </a>{" "}
+              <a
+                href="https://www.npmjs.com/package/@sindhujaks/totp"
+                target="_blank"
+                rel="noopener"
+                className="link-muted"
+              >
+                npm
+              </a>
+            </div>
+          </div>
         </div>
         <div className="build-log-note" style={{ marginTop: "1.5rem" }}>
           <p>Most production work lives in private repos. Public repos and contributions at github.com/sindhujaIBM.</p>
